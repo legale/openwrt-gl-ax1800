@@ -61,6 +61,15 @@ define Device/glinet_gl-ax1800
 endef
 TARGET_DEVICES += glinet_gl-ax1800
 
+define Device/yuncore_ax840
+	$(call Device/glinet_gl-common)
+	DEVICE_DTS := qcom-ipq6018-ax840
+	DEVICE_TITLE := Yuncore ax840
+	IMAGES += nand-factory.bin
+	IMAGE/nand-factory.bin := append-ubi | qsdk-ipq-factory-nand
+endef
+TARGET_DEVICES += yuncore_ax840
+
 define Device/glinet_gl-axt1800
 	$(call Device/glinet_gl-common)
 	DEVICE_DTS := qcom-ipq6018-gl-axt1800
