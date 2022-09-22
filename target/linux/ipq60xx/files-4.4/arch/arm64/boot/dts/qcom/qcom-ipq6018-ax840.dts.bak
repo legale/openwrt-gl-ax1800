@@ -1,0 +1,260 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+// Copyright (c) 2021 AmadeusGhost <amadeus@jmu.edu.cn>
+
+//#include "qcom-ipq6018-glinet.dtsi"
+#include "qcom-ipq6018-cp03-c1.dts"
+
+/ {
+	model = "Qualcomm Technologies, Inc. IPQ6018/AP-CP03-C1";
+	compatible = "qcom,ipq6018-cp03\0qcom,ipq6018";
+
+	aliases {
+		ethernet0 = "/soc/dp1";
+		ethernet1 = "/soc/dp2";
+	};
+	pmu {
+		compatible = "arm,armv8-pmuv3"; //stock 4.4
+	};
+
+	soc {
+		ess-switch@3a000000 {
+			switch_cpu_bmp = <0x1>;  /* cpu port bitmap */
+			switch_lan_bmp = <0x10>; /* lan port bitmap */
+			switch_wan_bmp = <0x20>; /* wan port bitmap */
+			switch_inner_bmp = <0x80>;
+			switch_mac_mode = <0x00>;
+			switch_mac_mode1 = <0xff>;
+			switch_mac_mode2 = <0xff>;
+
+			clocks = <0x02 0xb7 0x02 0xb8 0x02 0x8d 0x02 0x98 0x02 0x99 0x02 0x9c 0x02 0x7b 0x02 0x7c 0x02 0x7d 0x02 0x7e 0x02 0x7f 0x02 0x70 0x02 0x6f 0x02 0x77 0x02 0x76 0x02 0x63 0x02 0x62 0x02 0x71 0x02 0x5b 0x02 0x64 0x02 0xae 0x02 0x60 0x02 0x72 0x02 0x65 0x02 0x66 0x02 0x67 0x02 0x68 0x02 0x69 0x02 0x6a 0x02 0x6b 0x02 0x6c 0x02 0x6d 0x02 0x6e 0x02 0x8e 0x02 0x8f 0x02 0x90 0x02 0x91 0x02 0x92 0x02 0x93 0x02 0x94 0x02 0x95 0x02 0x96 0x02 0x97 0x02 0x9a 0x02 0x9b 0x02 0x0c 0x02 0x0d 0x02 0xf2>;
+			resets = <0x02 0x68 0x02 0x69 0x02 0x6a 0x02 0x6b 0x02 0x6c 0x02 0x70 0x02 0x71 0x02 0x72 0x02 0x73 0x02 0x74 0x02 0x75 0x02 0x76 0x02 0x77 0x02 0x78 0x02 0x79 0x02 0x7a 0x02 0x7b>;
+			
+			qcom,port_phyinfo {
+				port@3 {
+					port_id = <0x04>;
+					phy_address = <0x03>;
+				};
+
+				port@4 {
+					port_id = <0x05>;
+					phy_address = <0x04>;
+				};				
+			};
+		};
+		dp1 {
+			reg = <0x3a001600 0x200>;
+			qcom,phy-mdio-addr = <0x03>;
+			qcom,link-poll = <0x01>;
+			compatible = "qcom,nss-dp";
+			local-mac-address = [44 d1 fa bc 0e 5c];
+			phy-mode = "sgmii";
+			device_type = "network";
+			qcom,mactype = <0x00>;
+			qcom,id = <0x04>;
+		};
+
+		dp2 {
+			reg = <0x3a001800 0x200>;
+			qcom,phy-mdio-addr = <0x04>;
+			qcom,link-poll = <0x01>;
+			compatible = "qcom,nss-dp";
+			local-mac-address = [44 d1 fa bc 0e 5d];
+			phy-mode = "sgmii";
+			device_type = "network";
+			qcom,mactype = <0x00>;
+			qcom,id = <0x05>;
+		};
+		
+		pinctrl@1000000 {
+			phandle = <0x0b>;
+			linux,phandle = <0x0b>;
+
+			leds_pins {
+				phandle = <0x48>;
+				linux,phandle = <0x48>;
+
+				led_sys {
+					pins = "gpio32";
+					function = "gpio";
+					drive-strength = <0x08>;
+					bias-pull-down;
+				};
+
+				led_2g {
+					pins = "gpio37";
+					function = "gpio";
+					drive-strength = <0x08>;
+					bias-pull-down;
+				};
+
+				led_5g {
+					pins = "gpio35";
+					function = "gpio";
+					drive-strength = <0x08>;
+					bias-pull-down;
+				};
+			};
+			
+			qpic_pins {
+				phandle = <0x1b>;
+				linux,phandle = <0x1b>;
+			};			
+			spi_0_pins {
+				phandle = <0x0d>;
+				linux,phandle = <0x0d>;
+			};				
+
+			button_pins {
+				phandle = <0x47>;
+				linux,phandle = <0x47>;
+
+				reset_button {
+					pins = "gpio19";
+					function = "gpio";
+					drive-strength = <0x08>;
+					bias-pull-down;
+				};
+			};
+			mdio_pinmux {
+				phandle = <0x1e>;
+				linux,phandle = <0x1e>;
+			};
+			uart_pins {
+				phandle = <0x03>;
+				linux,phandle = <0x03>;
+			};
+	
+		};			
+		spi@78b5000 {
+			reg = <0x78b5000 0x600>;
+			dmas = <0x0c 0x0c 0x0c 0x0d>;
+			interrupts = <0x00 0x5f 0x00>;
+			pinctrl-0 = <0x0d>;
+			compatible = "qcom,spi-qup-v2.2.1";
+			clock-names = "core\0iface";
+			cs-select = <0x00>;
+			clocks = <0x02 0x45 0x02 0x43>;
+			spi-max-frequency = <0x2faf080>;
+			status = "ok";
+			#address-cells = <0x01>;
+			#size-cells = <0x00>;
+			dma-names = "tx\0rx";
+			pinctrl-names = "default";
+
+			m25p80@0 {
+				reg = <0x00>;
+				density = <0x1000000>;
+				compatible = "n25q128a11";
+				use-default-sizes;
+				spi-max-frequency = <0x2faf080>;
+				#address-cells = <0x01>;
+				linux,modalias = "m25p80\0n25q128a11";
+				#size-cells = <0x01>;
+				sector-size = <0x10000>;
+
+				partition@110000 {
+					reg = <0x110000 0x1a0000>;
+					label = "0:QSEE_1";
+				};
+
+				partition@450000 {
+					reg = <0x450000 0x10000>;
+					label = "0:DEVCFG_1";
+				};
+
+				partition@460000 {
+					reg = <0x460000 0x10000>;
+					label = "0:DEVCFG";
+				};
+
+				partition@470000 {
+					reg = <0x470000 0x40000>;
+					label = "0:RPM_1";
+				};
+
+				partition@500000 {
+					reg = <0x500000 0x10000>;
+					label = "0:CDT";
+				};
+
+				partition@510000 {
+					reg = <0x510000 0x10000>;
+					label = "0:APPSBLENV";
+				};
+
+				partition@520000 {
+					reg = <0x520000 0xa0000>;
+					label = "0:APPSBL_1";
+				};
+
+				partition@660000 {
+					reg = <0x660000 0x40000>;
+					label = "0:ART";
+				};
+
+				partition@2b0000 {
+					reg = <0x2b0000 0x1a0000>;
+					label = "0:QSEE";
+				};
+
+				partition@4b0000 {
+					reg = <0x4b0000 0x40000>;
+					label = "0:RPM";
+				};
+
+				partition@4f0000 {
+					reg = <0x4f0000 0x10000>;
+					label = "0:CDT_1";
+				};
+
+				partition@5c0000 {
+					reg = <0x5c0000 0xa0000>;
+					label = "0:APPSBL";
+				};
+
+				partition@0 {
+					reg = <0x00 0xc0000>;
+					label = "0:SBL1";
+				};
+
+				partition@c0000 {
+					reg = <0xc0000 0x10000>;
+					label = "0:MIBIB";
+				};
+
+				partition@d0000 {
+					reg = <0xd0000 0x20000>;
+					label = "0:BOOTCONFIG";
+				};
+
+				partition@f0000 {
+					reg = <0xf0000 0x20000>;
+					label = "0:BOOTCONFIG1";
+				};
+			};
+		};
+
+		spi@78b6000 {
+			dmas = <0x0c 0x0e 0x0c 0x0f>;
+			clocks = <0x02 0x47 0x02 0x43>;
+		};
+
+	};
+
+	qseecom {
+		mem-start = <0x49b00000>;
+		compatible = "ipq6018-qseecom";
+		status = "ok";
+		mem-size = <0x600000>;
+	};
+
+};
+
+
+&pcie_phy {
+	status = "ok";
+};
+
+&pcie0 {
+	status = "ok";
+};
