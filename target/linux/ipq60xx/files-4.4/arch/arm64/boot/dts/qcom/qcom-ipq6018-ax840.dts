@@ -7,11 +7,25 @@
 / {
 	model = "Qualcomm Technologies, Inc. IPQ6018/AP-CP03-C1";
 	compatible = "qcom,ipq6018-cp03\0qcom,ipq6018";
+	
+	qcom,msm-id = <0x192 0x00>;
 
 	aliases {
 		ethernet0 = "/soc/dp1";
 		ethernet1 = "/soc/dp2";
 	};
+	
+	pmu {
+		compatible = "arm,armv8-pmuv3";
+	};	
+	
+	reserved-memory {
+		tzapp:tzapp@49B00000 {  /* TZAPPS */
+			no-map;
+			reg = <0x0 0x49B00000 0x0 0x00600000>;
+		};
+	};
+	
 };
 
 &soc {
@@ -89,16 +103,28 @@
 		qcom,id = <0x05>;
 	};
 	
+	gpio_keys {
+		pinctrl-0 = <&button_pins>;
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
 
+		reset {
+			gpios = <&tlmm 19 GPIO_ACTIVE_LOW>;
+			label = "reset";
+			debounce-interval = <0x3c>;
+			linux,code = <0x74>;
+			linux,input-type = <0x01>;
+		};	
+	};
 
 };
 
 
-
-
 &spi_0 {
-
-
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+	status = "ok";
+	
 	m25p80@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -214,13 +240,7 @@
 		bias-pull-down;
 	};
 };
-
-&qpic_pins {
-	pins = "gpio1", "gpio3", "gpio4", "gpio10", "gpio11", "gpio17";
-	function = "qpic_pad";
-	drive-strength = <8>;
-	bias-pull-down;
-};			
+		
 
 &spi_0_pins {
 	pins = "gpio38", "gpio39", "gpio40", "gpio41";
@@ -239,112 +259,28 @@
 	};
 };
 
-
-
-&cpus {
-
-	cpu@0 {
-		reg = <0x00>;
-		next-level-cache = <0x4a>;
-		compatible = "arm,cortex-a53\0arm,armv8";
-		qcom,acc = <0x49>;
-		operating-points-v2 = <0x4c>;
-		clocks = <0x4b 0x03>;
-		phandle = <0x37>;
-		cpu0-supply = <0x4d>;
-		linux,phandle = <0x37>;
-
-		l2-cache {
-			compatible = "cache";
-			cache-level = <0x02>;
-			phandle = <0x4a>;
-			linux,phandle = <0x4a>;
-		};
-	};
-
-	cpu@1 {
-		reg = <0x01>;
-		next-level-cache = <0x4a>;
-		compatible = "arm,cortex-a53\0arm,armv8";
-		qcom,acc = <0x4e>;
-		clock-names = "cpu";
-		cpu-supply = <0x4d>;
-		enable-method = "psci";
-		operating-points-v2 = <0x4c>;
-		voltage-tolerance = <0x01>;
-		device_type = "cpu";
-		clocks = <0x4b 0x03>;
-		phandle = <0x39>;
-		linux,phandle = <0x39>;
-	};
-
-	cpu@2 {
-		reg = <0x02>;
-		next-level-cache = <0x4a>;
-		compatible = "arm,cortex-a53\0arm,armv8";
-		qcom,acc = <0x4f>;
-		clock-names = "cpu";
-		cpu-supply = <0x4d>;
-		enable-method = "psci";
-		operating-points-v2 = <0x4c>;
-		voltage-tolerance = <0x01>;
-		device_type = "cpu";
-		clocks = <0x4b 0x03>;
-		phandle = <0x3b>;
-		linux,phandle = <0x3b>;
-	};
-
-	cpu@3 {
-		reg = <0x03>;
-		next-level-cache = <0x4a>;
-		compatible = "arm,cortex-a53\0arm,armv8";
-		qcom,acc = <0x50>;
-		clock-names = "cpu";
-		cpu-supply = <0x4d>;
-		enable-method = "psci";
-		operating-points-v2 = <0x4c>;
-		voltage-tolerance = <0x01>;
-		device_type = "cpu";
-		clocks = <0x4b 0x03>;
-		phandle = <0x3d>;
-		linux,phandle = <0x3d>;
-	};
-
-	opp_table0 {
-		opp-shared;
-		compatible = "operating-points-v2";
-		phandle = <0x4c>;
-		linux,phandle = <0x4c>;
-
-		opp00 {
-			opp-hz = <0x00 0x00>;
-			opp-microvolt = <0x00>;
-			clock-latency-ns = <0x30d40>;
+&nand {
+	pinctrl-0 = <&qpic_pins>;
+	pinctrl-names = "default";
+	status = "ok";
+	nandcs@0 {	
+		partition@0 {
+			reg = <0x00 0x3c00000>;
+			label = "rootfs_1";
 		};
 
-		opp01 {
-			opp-hz = <0x00 0x337f9800>;
-			opp-microvolt = <0x01>;
-			clock-latency-ns = <0x30d40>;
-		};
-
-		opp02 {
-			opp-hz = <0x00 0x3ef14800>;
-			opp-microvolt = <0x02>;
-			clock-latency-ns = <0x30d40>;
-		};
-
-		opp03 {
-			opp-hz = <0x00 0x47868c00>;
-			opp-microvolt = <0x03>;
-			clock-latency-ns = <0x30d40>;
-		};
+		partition@3c00000 {
+			reg = <0x3c00000 0x3c00000>;
+			label = "rootfs";
+		};	
 	};
 };
 
 
 &qseecom {
+	mem-start = <0x49b00000>;
 	status = "ok";
+	mem-size = <0x600000>;
 };
 
 
@@ -354,4 +290,10 @@
 
 &pcie0 {
 	status = "ok";
+};
+
+
+&q6_region {
+	no-map;
+	reg = <0x00 0x4ab00000 0x00 0x5500000>;
 };
