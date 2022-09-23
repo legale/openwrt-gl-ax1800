@@ -4,6 +4,12 @@
 //#include "qcom-ipq6018-glinet.dtsi"
 #include "qcom-ipq6018-cp03-c1.dts"
 
+	memory {
+		reg = <0x00 0x40000000 0x00 0x20000000>;
+		device_type = "memory";
+	};
+
+
 / {
 	model = "Qualcomm Technologies, Inc. IPQ6018/AP-CP03-C1";
 	compatible = "qcom,ipq6018-cp03\0qcom,ipq6018";
